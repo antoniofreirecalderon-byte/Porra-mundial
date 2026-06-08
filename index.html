@@ -70,10 +70,11 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer}
     <div class="card" style="border-radius:12px">
       <div class="bc" style="font-size:11px;letter-spacing:3px;color:#444;margin-bottom:10px">Sistema de puntos</div>
       <div class="pts-row"><span style="color:#777">Fase de Grupos</span><span class="bc" style="font-weight:700;color:#4CAF50">1 pto</span></div>
-      <div class="pts-row"><span style="color:#777">Octavos de Final</span><span class="bc" style="font-weight:700;color:#4CAF50">2 pts</span></div>
-      <div class="pts-row"><span style="color:#777">Cuartos de Final</span><span class="bc" style="font-weight:700;color:#4CAF50">3 pts</span></div>
-      <div class="pts-row"><span style="color:#777">Semifinales</span><span class="bc" style="font-weight:700;color:#4CAF50">4 pts</span></div>
-      <div class="pts-row"><span style="color:#777">Final</span><span class="bc" style="font-weight:700;color:#4CAF50">5 pts</span></div>
+      <div class="pts-row"><span style="color:#777">16avos de Final</span><span class="bc" style="font-weight:700;color:#4CAF50">2 pts</span></div>
+      <div class="pts-row"><span style="color:#777">Octavos de Final</span><span class="bc" style="font-weight:700;color:#4CAF50">3 pts</span></div>
+      <div class="pts-row"><span style="color:#777">Cuartos de Final</span><span class="bc" style="font-weight:700;color:#4CAF50">4 pts</span></div>
+      <div class="pts-row"><span style="color:#777">Semifinales</span><span class="bc" style="font-weight:700;color:#4CAF50">5 pts</span></div>
+      <div class="pts-row"><span style="color:#777">Final</span><span class="bc" style="font-weight:700;color:#4CAF50">6 pts</span></div>
     </div>
   </div>
 
@@ -105,8 +106,8 @@ button{font-family:'Barlow Condensed',sans-serif;cursor:pointer}
     <div id="sb-cards"></div>
     <div class="card" style="border-radius:12px;margin-top:4px">
       <div class="bc" style="font-size:11px;letter-spacing:3px;color:#444;margin-bottom:6px">Máximo posible</div>
-      <div class="bc" style="font-size:22px;font-weight:900;color:#4CAF50">57 puntos</div>
-      <div style="font-size:12px;color:#555;margin-top:2px">16×1 + 8×2 + 4×3 + 2×4 + 1×5</div>
+      <div class="bc" style="font-size:22px;font-weight:900;color:#4CAF50">129 puntos</div>
+      <div style="font-size:12px;color:#555;margin-top:2px">32×1 + 16×2 + 8×3 + 4×4 + 2×5 + 1×6</div>
     </div>
   </div>
 
@@ -135,33 +136,42 @@ const db = firebase.database();
 
 // ── CONSTANTES ────────────────────────────────────────────────────
 const GROUPS = {
-  A:["México","Ecuador","Países Bajos","Polonia"],
-  B:["Inglaterra","Irán","EE.UU.","Gales"],
-  C:["Argentina","Arabia Saudí","Australia","Túnez"],
-  D:["Francia","Dinamarca","Perú","Bolivia"],
-  E:["España","Alemania","Japón","Costa Rica"],
-  F:["Bélgica","Canadá","Marruecos","Croacia"],
-  G:["Brasil","Serbia","Suiza","Camerún"],
-  H:["Portugal","Uruguay","Corea del Sur","Ghana"],
+  A:["México","Sudáfrica","Corea del Sur","Chequia"],
+  B:["Canadá","Suiza","Qatar","Bosnia y Herz."],
+  C:["Brasil","Marruecos","Haití","Escocia"],
+  D:["EE.UU.","Paraguay","Australia","Turquía"],
+  E:["Alemania","Curazao","Costa de Marfil","Ecuador"],
+  F:["Países Bajos","Japón","Túnez","Suecia"],
+  G:["Bélgica","Egipto","Irán","Nueva Zelanda"],
+  H:["España","Cabo Verde","Arabia Saudí","Uruguay"],
+  I:["Francia","Senegal","Noruega","Irak"],
+  J:["Argentina","Argelia","Austria","Jordania"],
+  K:["Portugal","Colombia","Uzbekistán","R.D. Congo"],
+  L:["Inglaterra","Croacia","Ghana","Panamá"],
 };
 const ALL_TEAMS = Object.values(GROUPS).flat();
 const ROUNDS = [
-  {id:"group",label:"Fase de Grupos",points:1},
-  {id:"r16",  label:"Octavos",       points:2},
-  {id:"qf",   label:"Cuartos",       points:3},
-  {id:"sf",   label:"Semis",         points:4},
-  {id:"final",label:"Final",         points:5},
+  {id:"group",label:"Fase de Grupos",  points:1},
+  {id:"r32",  label:"16avos de Final", points:2},
+  {id:"r16",  label:"Octavos de Final",points:3},
+  {id:"qf",   label:"Cuartos de Final",points:4},
+  {id:"sf",   label:"Semifinales",     points:5},
+  {id:"final",label:"Final",           points:6},
 ];
-const SIZES = {group:16,r16:8,qf:4,sf:2,final:1};
+const SIZES = {group:32,r32:16,r16:8,qf:4,sf:2,final:1};
 const FLAGS = {
-  "México":"🇲🇽","Ecuador":"🇪🇨","Países Bajos":"🇳🇱","Polonia":"🇵🇱",
-  "Inglaterra":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Irán":"🇮🇷","EE.UU.":"🇺🇸","Gales":"🏴󠁧󠁢󠁷󠁬󠁳󠁿",
-  "Argentina":"🇦🇷","Arabia Saudí":"🇸🇦","Australia":"🇦🇺","Túnez":"🇹🇳",
-  "Francia":"🇫🇷","Dinamarca":"🇩🇰","Perú":"🇵🇪","Bolivia":"🇧🇴",
-  "España":"🇪🇸","Alemania":"🇩🇪","Japón":"🇯🇵","Costa Rica":"🇨🇷",
-  "Bélgica":"🇧🇪","Canadá":"🇨🇦","Marruecos":"🇲🇦","Croacia":"🇭🇷",
-  "Brasil":"🇧🇷","Serbia":"🇷🇸","Suiza":"🇨🇭","Camerún":"🇨🇲",
-  "Portugal":"🇵🇹","Uruguay":"🇺🇾","Corea del Sur":"🇰🇷","Ghana":"🇬🇭",
+  "México":"🇲🇽","Sudáfrica":"🇿🇦","Corea del Sur":"🇰🇷","Chequia":"🇨🇿",
+  "Canadá":"🇨🇦","Suiza":"🇨🇭","Qatar":"🇶🇦","Bosnia y Herz.":"🇧🇦",
+  "Brasil":"🇧🇷","Marruecos":"🇲🇦","Haití":"🇭🇹","Escocia":"🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+  "EE.UU.":"🇺🇸","Paraguay":"🇵🇾","Australia":"🇦🇺","Turquía":"🇹🇷",
+  "Alemania":"🇩🇪","Curazao":"🇨🇼","Costa de Marfil":"🇨🇮","Ecuador":"🇪🇨",
+  "Países Bajos":"🇳🇱","Japón":"🇯🇵","Túnez":"🇹🇳","Suecia":"🇸🇪",
+  "Bélgica":"🇧🇪","Egipto":"🇪🇬","Irán":"🇮🇷","Nueva Zelanda":"🇳🇿",
+  "España":"🇪🇸","Cabo Verde":"🇨🇻","Arabia Saudí":"🇸🇦","Uruguay":"🇺🇾",
+  "Francia":"🇫🇷","Senegal":"🇸🇳","Noruega":"🇳🇴","Irak":"🇮🇶",
+  "Argentina":"🇦🇷","Argelia":"🇩🇿","Austria":"🇦🇹","Jordania":"🇯🇴",
+  "Portugal":"🇵🇹","Colombia":"🇨🇴","Uzbekistán":"🇺🇿","R.D. Congo":"🇨🇩",
+  "Inglaterra":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Croacia":"🇭🇷","Ghana":"🇬🇭","Panamá":"🇵🇦",
 };
 const PLAYERS = [
   {id:"antonio",name:"Antonio",color:"#00C9A7"},
@@ -172,11 +182,11 @@ const PLAYERS = [
 // ── ESTADO ────────────────────────────────────────────────────────
 let state = {
   predictions:{
-    antonio:{group:[],r16:[],qf:[],sf:[],final:[]},
-    paula:  {group:[],r16:[],qf:[],sf:[],final:[]},
-    hugo:   {group:[],r16:[],qf:[],sf:[],final:[]},
+    antonio:{group:[],r32:[],r16:[],qf:[],sf:[],final:[]},
+    paula:  {group:[],r32:[],r16:[],qf:[],sf:[],final:[]},
+    hugo:   {group:[],r32:[],r16:[],qf:[],sf:[],final:[]},
   },
-  results:{group:[],r16:[],qf:[],sf:[],final:[]}
+  results:{group:[],r32:[],r16:[],qf:[],sf:[],final:[]}
 };
 let currentView  = "home";
 let activePlayer = "antonio";
